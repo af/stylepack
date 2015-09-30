@@ -48,14 +48,24 @@ module.exports = function(options) {
 
     debug('init with options: ' + JSON.stringify(options))
     debug('loader: ' + loader)
-    return {
-        loader: loader,
-        stylusConfig: {
+
+    // Return a function that takes a webpack config object, and spits out
+    // a modified config with our stylus options included:
+    return function(webpackConfig) {
+        webpackConfig = webpackConfig || {}
+
+        // FIXME: ensure module.loaders is an array here
+        // TODO: make test regex configurable
+        webpackConfig.module.loaders.push({ test: /\.styl$/, loader: loader })
+
+        webpackConfig.stylus = {
             // See https://github.com/shama/stylus-loader/blob/master/index.js
             use: [
                 require('autoprefixer-stylus'),
                 options.vars && stylusVarHelper(options.vars)
             ].filter(function(x) { return !!x }),
         }
+
+        return webpackConfig
     }
 }
