@@ -1,4 +1,6 @@
+var debug = require('debug')('stylepack')
 var path = require('path')
+var stylus = require('stylus-loader/node_modules/stylus')
 var DEV_MODE = (process.env.NODE_ENV !== 'production')
 
 
@@ -20,16 +22,32 @@ var loader = ['./node_modules/style-loader',
 //     return config
 // }
 
+function stylusVarHelper(variableHash) {
+    return function(style) {
+        debug('Using stylus variable helper with: ' + JSON.stringify(variableHash))
+        for (var k in variableHash) {
+            // TODO: only support for literals at the moment- this works
+            // well for strings like '32px' and '#f00' but we'll probably
+            // want to add support for arrays/objects/etc later.
+            // See https://github.com/stylus/stylus/tree/dev/lib/nodes
+            style.define(k, new stylus.nodes.Literal(variableHash[k]))
+        }
+    }
+}
+
 module.exports = function(options) {
     options = options || {}
 
-    console.log('stylepackin with', options, loader)
+    debug('init with options: ' + JSON.stringify(options))
+    debug('loader: ' + loader)
     return {
         loader: loader,
         stylusConfig: {
             // See https://github.com/shama/stylus-loader/blob/master/index.js
-            use: [require('autoprefixer-stylus')],
-            define: options.vars || { $test: '#00f' }      // FIXME: quoted strings in stylus
+            use: [
+                require('autoprefixer-stylus'),
+                options.vars && stylusVarHelper(options.vars)
+            ].filter(function(x) { return !!x }),
         }
     }
 }
