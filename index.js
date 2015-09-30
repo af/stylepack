@@ -10,11 +10,6 @@ var DEV_MODE = (process.env.NODE_ENV !== 'production')
 // var ExtractTextPlugin = require('extract-text-webpack-plugin');
 // ExtractTextPlugin.extract('style-loader', 'css-loader!stylus-loader')
 
-var loader = ['./node_modules/style-loader',
-              './node_modules/css-loader',
-              './node_modules/stylus-loader'
-             ].map(function(p) { return path.join(__dirname, p) }).join('!')
-
 // exports.postProcessConfig = function(config) {
 //     // Currently only used in production mode (without HMR)
 //     // TODO: prevent styles.js from being created along with styles.css
@@ -37,6 +32,19 @@ function stylusVarHelper(variableHash) {
 
 module.exports = function(options) {
     options = options || {}
+
+    // Set up the full chained loader string to pass to webpack for handling
+    // stylus files:
+    var loader = [
+        './node_modules/style-loader',
+        './node_modules/css-loader',
+        './node_modules/stylus-loader'
+    ].map(function(p) {
+        var useCSSModules = options.cssModules && p.match(/\/css-loader$/)
+        var suffix = useCSSModules ? '?modules' : ''
+        if (useCSSModules) debug('Enabling CSS modules')
+        return path.join(__dirname, p) + suffix
+    }).join('!')
 
     debug('init with options: ' + JSON.stringify(options))
     debug('loader: ' + loader)
