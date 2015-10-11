@@ -40,9 +40,10 @@ module.exports = function(options) {
         './node_modules/css-loader',
         './node_modules/stylus-loader'
     ].map(function(p) {
-        var useCSSModules = options.cssModules && p.match(/\/css-loader$/)
-        var suffix = useCSSModules ? '?modules' : ''
-        if (useCSSModules) debug('Enabling CSS modules')
+        var enableCSSModules = (options.cssModules !== false) && p.match(/\/css-loader$/)
+        var moduleFormat = DEV_MODE ? '&localIdentName=[name]__[local]___[hash:base64:5]' : ''
+        var suffix = enableCSSModules ? ('?modules' + moduleFormat) : ''
+        if (enableCSSModules) debug('Enabling CSS modules')
         return path.join(__dirname, p) + suffix
     }).join('!')
 
