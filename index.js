@@ -42,7 +42,7 @@ module.exports = function(options) {
     ].map(function(p) {
         var enableCSSModules = (options.cssModules !== false) && p.match(/\/css-loader$/)
         var moduleFormat = DEV_MODE ? '&localIdentName=[name]__[local]___[hash:base64:5]' : ''
-        var suffix = enableCSSModules ? ('?modules' + moduleFormat) : ''
+        var suffix = enableCSSModules ? ('?modules&importLoaders=1' + moduleFormat) : ''
         if (enableCSSModules) debug('Enabling CSS modules')
         return path.join(__dirname, p) + suffix
     }).join('!')
