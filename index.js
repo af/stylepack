@@ -56,13 +56,13 @@ module.exports = function(options) {
         webpackConfig = webpackConfig || {}
 
         // FIXME: ensure module.loaders is an array here
-        // TODO: make test regex configurable
-        webpackConfig.module.loaders.push({ test: /\.styl$/, loader: loader })
+        var regex = options.fileMatchRegex || /\.styl$/
+        webpackConfig.module.loaders.push({ test: regex, loader: loader })
 
         webpackConfig.stylus = {
             // See https://github.com/shama/stylus-loader/blob/master/index.js
             use: [
-                require('autoprefixer-stylus'),
+                options.autoprefix && require('autoprefixer-stylus'),
                 options.vars && stylusVarHelper(options.vars)
             ].filter(function(x) { return !!x }),
         }
