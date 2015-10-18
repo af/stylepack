@@ -31,11 +31,11 @@ module.exports = addStyleConfig(config)
 The stylepack function takes an optional configuration object, with the following
 supported keys:
 
-* `cssModules` - set to `false` to disable CSS Modules (they're on by default)
+* `cssModules` - Set this to `false` to disable CSS Modules (they're on by default)
 * `vars` - An object containing variables that will be available to the stylus files.
   This allows you to share variables across your stylesheets and application
   JavaScript (eg. colours, animation times, media query breakpoints).
   ```Note: nested objects and arrays are not yet supported within the vars option```
 * `fileMatchRegex` - A RegExp used to match files that Stylepack will process.
   (default: `/\.styl$/`)
-* `autoprefix` - Set to `false` to disable autoprefixer (it's on by default)
+* `autoprefix` - Set this to `false` to disable autoprefixer (it's on by default)
