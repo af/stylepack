@@ -3,6 +3,8 @@ var path = require('path')
 var stylus = require('stylus-loader/node_modules/stylus')
 var DEV_MODE = (process.env.NODE_ENV !== 'production')
 
+require('es6-promise').polyfill()       // Needed to run postcss on node 0.10.x
+
 
 // TODO: conditionally use this as a loader in non-dev mode
 // See github.com/webpack/extract-text-webpack-plugin/issues/30
