@@ -54,10 +54,14 @@ module.exports = function(options) {
     // a modified config with our stylus options included:
     return function(webpackConfig) {
         webpackConfig = webpackConfig || {}
+        if (!webpackConfig.module) webpackConfig.module = {}
 
-        // FIXME: ensure module.loaders is an array here
         var regex = options.fileMatchRegex || /\.styl$/
-        webpackConfig.module.loaders.push({ test: regex, loader: loader })
+        var loaderConfig = webpackConfig.module.loaders
+        var loaderSpec = { test: regex, loader: loader }
+        webpackConfig.module.loaders = loaderConfig
+            ? loaderConfig.concat(loaderSpec)
+            : [loaderSpec]
 
         webpackConfig.stylus = {
             // See https://github.com/shama/stylus-loader/blob/master/index.js
