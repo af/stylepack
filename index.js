@@ -1,6 +1,6 @@
 var debug = require('debug')('stylepack')
 var path = require('path')
-var stylus = require('stylus-loader/node_modules/stylus')
+var stylus = require('stylus')
 var DEV_MODE = (process.env.NODE_ENV !== 'production')
 
 require('es6-promise').polyfill()       // Needed to run postcss on node 0.10.x

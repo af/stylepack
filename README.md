@@ -10,6 +10,10 @@ Stylepack gives you:
 * Support for webpack's awesome Hot Module Replacement for development mode
 * [autoprefixer](https://github.com/postcss/autoprefixer) built in by default
 
+## Install
+
+`npm install --save stylepack stylus`
+
 
 ## Usage
 
