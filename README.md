@@ -23,10 +23,33 @@ Simple example:
 // In your webpack.config.js
 var config = {
     // ... the rest of your webpack configuration ...
+    // For most cases you won't need to add anything here
 };
 
-var addStyleConfig = require('stylepack')({ /* optional config goes here */ })
+// Pass the webpack config object through this function to add
+// stylus & CSS module goodness to your webpack setup:
+var addStyleConfig = require('stylepack')({
+    // optional stylepack config goes here
+})
 module.exports = addStyleConfig(config)
+```
+
+Now, say you have a `foo.styl` file in your project as follows:
+
+```stylus
+.bar
+    color: red
+    font-weight: bold
+```
+
+Then in your client-side JS code, you can import this stylus file, and webpack
+will compile and bundle it automatically. The default import will be a hash of
+classnames that you can use in your JavaScript (eg. for React components):
+
+```js
+import classes from './foo.styl'
+
+document.body.classList.add(classes.bar)
 ```
 
 
