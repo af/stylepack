@@ -36,9 +36,9 @@ module.exports = function(options) {
     // Set up the full chained loader string to pass to webpack for handling
     // stylus files:
     var loader = [
-        './node_modules/style-loader',
-        './node_modules/css-loader',
-        './node_modules/stylus-loader'
+        '../style-loader',
+        '../css-loader',
+        '../stylus-loader'
     ].map(function(p) {
         var enableCSSModules = (options.cssModules !== false) && p.match(/\/css-loader$/)
         var moduleFormat = DEV_MODE ? '&localIdentName=[name]__[local]___[hash:base64:5]' : ''
