@@ -21,11 +21,25 @@ function stylusVarHelper(variableHash) {
     return function(style) {
         debug('Using stylus variable helper with: ' + JSON.stringify(variableHash))
         for (var k in variableHash) {
-            // TODO: only support for literals at the moment- this works
-            // well for strings like '32px' and '#f00' but we'll probably
-            // want to add support for arrays/objects/etc later.
+            // TODO: Will probably want to add support for arrays/objects/etc later.
             // See https://github.com/stylus/stylus/tree/dev/lib/nodes
-            style.define(k, new stylus.nodes.Literal(variableHash[k]))
+            var v = variableHash[k]
+            if (v.match(/^rgba\(/)) {
+                // Support for rgba() string variables
+                var m = v.match(/^rgba\((\d+), *(\d+), *(\d+), *([\d\.]+)\)/)
+                if (!m) break
+                var rgba = m.slice(1, 5).map(x => parseFloat(x))
+                style.define(k, new stylus.nodes.RGBA(...rgba))
+            } else if (v[0] === '#') {
+                // Support for hex colour string variables (#abcabc)
+                var m = v.match(/^\#([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})$/)
+                if (!m) break
+                var rgb = m.slice(1, 4).map(x => parseInt(x, 16))
+                style.define(k, new stylus.nodes.RGBA(...rgb, 1))
+            } else {
+                // Support for regular string literals
+                style.define(k, new stylus.nodes.Literal(v))
+            }
         }
     }
 }
