@@ -4,19 +4,6 @@ const stylus = require('stylus')
 const DEV_MODE = (process.env.NODE_ENV !== 'production')
 
 
-// TODO: conditionally use this as a loader in non-dev mode
-// See github.com/webpack/extract-text-webpack-plugin/issues/30
-//
-// var ExtractTextPlugin = require('extract-text-webpack-plugin');
-// ExtractTextPlugin.extract('style-loader', 'css-loader!stylus-loader')
-
-// exports.postProcessConfig = function(config) {
-//     // Currently only used in production mode (without HMR)
-//     // TODO: prevent styles.js from being created along with styles.css
-//     // if (!DEV_MODE) config.plugins.push(new ExtractTextPlugin('styles.css'))
-//     return config
-// }
-
 const stylusVarHelper = variableHash => style => {
     debug(`Using stylus variable helper with: ${JSON.stringify(variableHash)}`)
     for (let k in variableHash) {
@@ -43,44 +30,41 @@ const stylusVarHelper = variableHash => style => {
 }
 
 module.exports = (options = {}) => {
-    const {cssModules: true, fileMatchRegex: /\.styl$/, autoprefix: true, vars} = options
-
-    // Set up the full chained loader string to pass to webpack for handling
-    // stylus files:
-    const loader = [
-        '../style-loader',
-        '../css-loader',
-        '../stylus-loader'
-    ].map(p => {
-        const enableCSSModules = (options.cssModules !== false) && p.match(/\/css-loader$/)
-        const moduleFormat = DEV_MODE ? '&localIdentName=[name]__[local]___[hash:base64:5]' : ''
-        const suffix = enableCSSModules ? ('?modules&importLoaders=1' + moduleFormat) : ''
-        if (enableCSSModules) debug('Enabling CSS modules')
-        return path.join(__dirname, p) + suffix
-    }).join('!')
-
+    const {cssModules=true, fileMatchRegex=/\.styl$/, autoprefix=true, vars} = options
     debug(`init with options: ${JSON.stringify(options)}`)
-    debug(`loader: ${loader}`)
+
+    // Css module configuration
+    const moduleFormat = DEV_MODE ? '&localIdentName=[name]__[local]___[hash:base64:5]' : ''
+    const CSSMSuffix = cssModules ? ('?modules&importLoaders=1' + moduleFormat) : ''
+    if (cssModules) debug('Enabling CSS modules')
+
+    // Configure module rules for webpack 2
+    // See https://github.com/shama/stylus-loader#webpack-2
+    const getPath = p => require.resolve(p)
+    const loaders = [
+        getPath('style-loader'),
+        getPath('css-loader') + CSSMSuffix,
+        {
+            loader: 'stylus-loader',
+            options: {
+                use: [
+                    vars && stylusVarHelper(vars)
+                ].filter(x => !!x)
+            }
+        }
+    ]
+    debug(`loaders: ${loaders}`)
 
     // Return a function that takes a webpack config object, and spits out
     // a modified config with our stylus options included:
-    return function(webpackConfig) {
-        webpackConfig = webpackConfig || {}
+    return (webpackConfig = {}) => {
         if (!webpackConfig.module) webpackConfig.module = {}
 
-        const loaderConfig = webpackConfig.module.loaders
-        const loaderSpec = { test: fileMatchRegex, loader }
-        webpackConfig.module.loaders = loaderConfig
-            ? loaderConfig.concat(loaderSpec)
+        const rules = webpackConfig.module.rules || []
+        const loaderSpec = {test: fileMatchRegex, use: loaders}
+        webpackConfig.module.rules = rules
+            ? rules.concat(loaderSpec)
             : [loaderSpec]
-
-        webpackConfig.stylus = {
-            // See https://github.com/shama/stylus-loader/blob/master/index.js
-            use: [
-                autoprefix && require('autoprefixer-stylus'),
-                vars && stylusVarHelper(vars)
-            ].filter(x => !!x),
-        }
 
         return webpackConfig
     }

@@ -8,7 +8,6 @@ Stylepack gives you:
 * Proper style isolation using CSS Modules (though you can opt-out if you like)
 * Shared variables between your JavaScript and styles
 * Support for webpack's awesome Hot Module Replacement for development mode
-* [autoprefixer](https://github.com/postcss/autoprefixer) built in by default
 
 ## Install
 
@@ -65,4 +64,3 @@ supported keys:
   ```Note: nested objects and arrays are not yet supported within the vars option```
 * `fileMatchRegex` - A RegExp used to match files that Stylepack will process.
   (default: `/\.styl$/`)
-* `autoprefix` - Set this to `false` to disable autoprefixer (it's on by default)
