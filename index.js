@@ -1,6 +1,7 @@
 const debug = require('debug')('stylepack')
 const path = require('path')
 const stylus = require('stylus')
+const extractPlugin = require('extract-text-webpack-plugin')
 const DEV_MODE = (process.env.NODE_ENV !== 'production')
 
 
@@ -30,22 +31,27 @@ const stylusVarHelper = variableHash => style => {
 }
 
 module.exports = (options = {}) => {
-    const {cssModules=true, fileMatchRegex=/\.styl$/, autoprefix=true, vars} = options
-    debug(`init with options: ${JSON.stringify(options)}`)
-
-    // Css module configuration
-    const moduleFormat = DEV_MODE ? '&localIdentName=[name]__[local]___[hash:base64:5]' : ''
-    const CSSMSuffix = cssModules ? ('?modules&importLoaders=1' + moduleFormat) : ''
-    if (cssModules) debug('Enabling CSS modules')
+    const {cssModules=true, fileMatchRegex=/\.styl$/, extractTo, vars} = options
 
     // Configure module rules for webpack 2
     // See https://github.com/shama/stylus-loader#webpack-2
     const getPath = p => require.resolve(p)
     const loaders = [
-        getPath('style-loader'),
-        getPath('css-loader') + CSSMSuffix,
+        {loader: getPath('style-loader')},
         {
-            loader: 'stylus-loader',
+            loader: getPath('css-loader'),
+            options: {
+                minimize: !DEV_MODE,        // FIXME: this doesn't seem to work
+                importLoaders: 1,
+
+                // Css module configuration options
+                // See https://github.com/webpack/css-loader
+                cssModules,
+                localIdentName: '[name]__[local]__[hash:base64:5]'
+            }
+        },
+        {
+            loader: getPath('stylus-loader'),
             options: {
                 use: [
                     vars && stylusVarHelper(vars)
@@ -59,9 +65,26 @@ module.exports = (options = {}) => {
     // a modified config with our stylus options included:
     return (webpackConfig = {}) => {
         if (!webpackConfig.module) webpackConfig.module = {}
+        if (!webpackConfig.plugins) webpackConfig.plugins = []
 
         const rules = webpackConfig.module.rules || []
         const loaderSpec = {test: fileMatchRegex, use: loaders}
+
+        // TODO: support multiple extract-text bundles by passing an array instead
+        // of a string (as extractTo)
+        if (extractTo) {
+            webpackConfig.plugins.push(new extractPlugin(extractTo))
+            // Note! This should be `loaderSpec.use` but that doesn't work yet
+            // see https://github.com/webpack/extract-text-webpack-plugin/issues/282
+            loaderSpec.loader = extractPlugin.extract({
+                // We don't want to use the style loader with extract-text-webpack-plugin,
+                // hence the slice() below. See http://stackoverflow.com/a/35369247/351433
+                loader: loaders.slice(1),
+                fallbackLoader: getPath('style-loader')
+            })
+            delete loaderSpec.use
+        }
+
         webpackConfig.module.rules = rules
             ? rules.concat(loaderSpec)
             : [loaderSpec]
