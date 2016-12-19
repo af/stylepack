@@ -64,3 +64,10 @@ supported keys:
   ```Note: nested objects and arrays are not yet supported within the vars option```
 * `fileMatchRegex` - A RegExp used to match files that Stylepack will process.
   (default: `/\.styl$/`)
+
+
+## TODO
+
+* Remove webpack dependency. It's only in the package.json because extract-text-webpack-plugin
+  errors out without it. Ideally you should be able to "bring your own" webpack version, without
+  this plugin also requiring it directly.
