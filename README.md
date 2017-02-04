@@ -19,18 +19,19 @@ Stylepack gives you:
 Simple example:
 
 ```js
-// In your webpack.config.js
-var config = {
-    // ... the rest of your webpack configuration ...
-    // For most cases you won't need to add anything here
+// webpack.config.js
+
+var webpackConfig = {
+    // ... your existing webpack configuration ...
 };
 
 // Pass the webpack config object through this function to add
 // stylus & CSS module goodness to your webpack setup:
-var addStyleConfig = require('stylepack')({
+var applyStylepack = require('stylepack')({
+    webpack: require('webpack'),
     // optional stylepack config goes here
 })
-module.exports = addStyleConfig(config)
+module.exports = applyStylepack(webpackConfig)
 ```
 
 Now, say you have a `foo.styl` file in your project as follows:

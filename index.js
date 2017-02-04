@@ -1,5 +1,4 @@
 const debug = require('debug')('stylepack')
-const path = require('path')
 const stylus = require('stylus')
 const extractPlugin = require('extract-text-webpack-plugin')
 const DEV_MODE = (process.env.NODE_ENV !== 'production')
@@ -31,7 +30,7 @@ const stylusVarHelper = variableHash => style => {
 }
 
 module.exports = (options = {}) => {
-    const {cssModules=true, fileMatchRegex=/\.styl$/, extractTo, vars} = options
+    const {webpack, cssModules=true, fileMatchRegex=/\.styl$/, extractTo, vars} = options
 
     // Configure module rules for webpack 2
     // See https://github.com/shama/stylus-loader#webpack-2
@@ -50,14 +49,7 @@ module.exports = (options = {}) => {
                 localIdentName: '[name]__[local]__[hash:base64:5]'
             }
         },
-        {
-            loader: getPath('stylus-loader'),
-            options: {
-                use: [
-                    vars && stylusVarHelper(vars)
-                ].filter(x => !!x)
-            }
-        }
+        {loader: getPath('stylus-loader')}
     ]
     debug(`loaders: ${loaders}`)
 
@@ -69,6 +61,18 @@ module.exports = (options = {}) => {
 
         const rules = webpackConfig.module.rules || []
         const loaderSpec = {test: fileMatchRegex, use: loaders}
+
+        // With webpack 2.2+ you need to use this plugin to pass options to stylus
+        // See https://github.com/shama/stylus-loader/issues/149
+        webpackConfig.plugins.push(new webpack.LoaderOptionsPlugin({
+            options: {
+                stylus: {
+                    use: [
+                        vars && stylusVarHelper(vars)
+                    ].filter(x => !!x)
+                }
+            }
+        }))
 
         // TODO: support multiple extract-text bundles by passing an array instead
         // of a string (as extractTo)
