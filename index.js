@@ -30,7 +30,7 @@ const stylusVarHelper = variableHash => style => {
 }
 
 module.exports = (options = {}) => {
-    const {webpack, cssModules=true, fileMatchRegex=/\.styl$/, extractTo, vars} = options
+    const {webpack, cssModules=false, fileMatchRegex=/\.styl$/, extractTo, vars} = options
 
     // Configure module rules for webpack 2
     // See https://github.com/shama/stylus-loader#webpack-2
@@ -45,7 +45,7 @@ module.exports = (options = {}) => {
 
                 // Css module configuration options
                 // See https://github.com/webpack/css-loader
-                cssModules,
+                modules: cssModules,
                 localIdentName: '[name]__[local]__[hash:base64:5]'
             }
         },

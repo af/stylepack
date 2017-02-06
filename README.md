@@ -5,7 +5,7 @@ Life-changing CSS workflow, leveraging the magic of [Stylus](https://learnboost.
 Stylepack gives you:
 
 * CSS with all the features of Stylus
-* Proper style isolation using CSS Modules (though you can opt-out if you like)
+* Proper style isolation using CSS Modules (optional)
 * Shared variables between your JavaScript and styles
 * Support for webpack's awesome Hot Module Replacement for development mode
 
@@ -58,7 +58,7 @@ document.body.classList.add(classes.bar)
 The stylepack function takes an optional configuration object, with the following
 supported keys:
 
-* `cssModules` - Set this to `false` to disable CSS Modules (they're on by default)
+* `cssModules` - Set this to `true` to enable CSS Modules
 * `vars` - An object containing variables that will be available to the stylus files.
   This allows you to share variables across your stylesheets and application
   JavaScript (eg. colours, animation times, media query breakpoints).
