@@ -21,13 +21,13 @@ Simple example:
 ```js
 // webpack.config.js
 
-var webpackConfig = {
+const webpackConfig = {
     // ... your existing webpack configuration ...
 };
 
 // Pass the webpack config object through this function to add
 // stylus & CSS module goodness to your webpack setup:
-var applyStylepack = require('stylepack')({
+const applyStylepack = require('stylepack')({
     webpack: require('webpack'),
     // optional stylepack config goes here
 })
@@ -65,6 +65,8 @@ supported keys:
   ```Note: nested objects and arrays are not yet supported within the vars option```
 * `fileMatchRegex` - A RegExp used to match files that Stylepack will process.
   (default: `/\.styl$/`)
+* `extractTo` - The name of a CSS file to extract the style rules into. Usually you only want
+  to enable this option in production mode
 
 
 ## TODO
