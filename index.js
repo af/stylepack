@@ -78,15 +78,12 @@ module.exports = (options = {}) => {
         // of a string (as extractTo)
         if (extractTo) {
             webpackConfig.plugins.push(new extractPlugin(extractTo))
-            // Note! This should be `loaderSpec.use` but that doesn't work yet
-            // see https://github.com/webpack/extract-text-webpack-plugin/issues/282
-            loaderSpec.loader = extractPlugin.extract({
+            loaderSpec.use = extractPlugin.extract({
                 // We don't want to use the style loader with extract-text-webpack-plugin,
                 // hence the slice() below. See http://stackoverflow.com/a/35369247/351433
-                loader: loaders.slice(1),
-                fallbackLoader: getPath('style-loader')
+                use: loaders.slice(1),
+                fallback: getPath('style-loader')
             })
-            delete loaderSpec.use
         }
 
         webpackConfig.module.rules = rules
