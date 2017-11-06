@@ -18,7 +18,7 @@ const stylusVarHelper = variableHash => style => {
             style.define(k, new stylus.nodes.RGBA(...rgba))
         } else if (v[0] === '#') {
             // Support for hex colour string variables (#abcabc)
-            const m = v.match(/^\#([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})$/)
+            const m = v.match(/^\#([0-9a-f]{1,2})([0-9a-f]{1,2})([0-9a-f]{1,2})$/i)
             if (!m) break
             const rgb = m.slice(1, 4).map(x => parseInt(x, 16))
             style.define(k, new stylus.nodes.RGBA(...rgb, 1))
