@@ -1,6 +1,6 @@
 {
   "name": "stylepack",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Snazzy stylus workflow with webpack",
   "main": "index.js",
   "keywords": [
